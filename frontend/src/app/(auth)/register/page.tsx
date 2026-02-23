@@ -1,0 +1,103 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Cloud, Lock, Mail, ArrowRight, User } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export default function RegisterPage() {
+    const router = useRouter();
+
+    const handleRegister = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Temporary redirect to dashboard
+        router.push("/dashboard");
+    };
+
+    return (
+        <div className="min-h-screen bg-background flex flex-col justify-center relative overflow-hidden font-[family-name:var(--font-geist-sans)] selection:bg-primary selection:text-white">
+            {/* Background gradients */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+
+            <div className="sm:mx-auto sm:w-full sm:max-w-md px-6">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass-card rounded-2xl p-8 border border-white/10 shadow-2xl relative"
+                >
+                    <div className="flex justify-center mb-8">
+                        <Link href="/" className="flex items-center gap-2 group">
+                            <div className="p-2 rounded-xl bg-white/5 border border-white/10 group-hover:border-primary/50 transition-colors">
+                                <Cloud className="w-8 h-8 text-primary" />
+                            </div>
+                            <span className="text-2xl font-bold tracking-tight">VaultMind</span>
+                        </Link>
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-center mb-2">Create Workspace</h2>
+                    <p className="text-sm text-muted-foreground text-center mb-8">
+                        Start governing your multi-cloud environment securely.
+                    </p>
+
+                    <form className="space-y-4" onSubmit={handleRegister}>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                            <div className="relative">
+                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="Jane Doe"
+                                    className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">Email Address</label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                <input
+                                    type="email"
+                                    required
+                                    placeholder="name@company.com"
+                                    className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-muted-foreground">Password</label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                <input
+                                    type="password"
+                                    required
+                                    placeholder="••••••••••••"
+                                    className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                                />
+                            </div>
+                            <p className="text-[10px] text-muted-foreground mt-1">Must be at least 12 characters, including numbers and symbols.</p>
+                        </div>
+
+                        <button type="submit" className="w-full h-11 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group mt-6 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                            Create Account
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </form>
+
+                    <p className="mt-8 text-center text-sm text-muted-foreground">
+                        Already have an account?{" "}
+                        <Link href="/login" className="text-foreground font-medium hover:underline">
+                            Sign In
+                        </Link>
+                    </p>
+
+                    <p className="mt-4 text-center text-[10px] text-muted-foreground opacity-50">
+                        By registering, you agree to VaultMind's Terms of Service and Privacy Policy. We use zero-trust architectures to ensure we never store your files.
+                    </p>
+                </motion.div>
+            </div>
+        </div>
+    );
+}
