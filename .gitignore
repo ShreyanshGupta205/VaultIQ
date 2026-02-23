@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+
+# Next.js
+.next/
+out/
+build/
+
+# Mac
+.DS_Store
