@@ -1,15 +1,107 @@
 "use client";
 
-import { FileIcon, FolderIcon, MoreVertical, Search, Filter } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { FileIcon, FolderIcon, MoreVertical, Filter, Image as ImageIcon, Video, FileText, File as GenericFile, Trash2 } from "lucide-react";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { API_BASE_URL } from "@/lib/constants";
+
+function formatBytes(bytes: string | number) {
+    if (!bytes) return "0 B";
+    const b = typeof bytes === 'string' ? parseFloat(bytes) : bytes;
+    if (b < 1024) return b + " B";
+    if (b < 1024 * 1024) return (b / 1024).toFixed(2) + " KB";
+    if (b < 1024 * 1024 * 1024) return (b / (1024 * 1024)).toFixed(2) + " MB";
+    return (b / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+}
+
+function getFileIcon(mimeType: string, isDir: boolean) {
+    if (isDir) return <FolderIcon className="w-5 h-5 text-indigo-400" />;
+    if (mimeType.startsWith("image/")) return <ImageIcon className="w-5 h-5 text-emerald-400" />;
+    if (mimeType.startsWith("video/")) return <Video className="w-5 h-5 text-pink-400" />;
+    if (mimeType.includes("pdf") || mimeType.includes("document")) return <FileText className="w-5 h-5 text-blue-400" />;
+    return <GenericFile className="w-5 h-5 text-muted-foreground" />;
+}
 
 export default function FileManagerPage() {
-    const dummyFiles = [
-        { name: "Q3_Financial_Report_Final.pdf", type: "pdf", size: "4.2 MB", modified: "2 hours ago", cloud: "Google Drive" },
-        { name: "Q3_Financial_Report_Final(1).pdf", type: "pdf", size: "4.2 MB", modified: "2 hours ago", cloud: "Dropbox" },
-        { name: "Marketing_Assets_2026.zip", type: "zip", size: "1.4 GB", modified: "Yesterday", cloud: "Google Drive" },
-        { name: "Product_Roadmap_VaultIQ.pptx", type: "presentation", size: "12.5 MB", modified: "3 days ago", cloud: "OneDrive" },
-        { name: "Client_Logos", type: "folder", size: "--", modified: "Last week", cloud: "Google Drive" },
-    ];
+    const { token } = useAuthStore();
+    const [files, setFiles] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const fetchFiles = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/files`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setFiles(data.files || []);
+            }
+        } catch (err) {
+            console.error("Failed to fetch files", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!token) return;
+        fetchFiles();
+    }, [token]);
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || !token) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/files/upload`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (res.ok) {
+                await fetchFiles();
+            } else {
+                const error = await res.json();
+                alert(error.error || "Upload failed");
+            }
+        } catch (err) {
+            console.error("Upload error", err);
+            alert("Network error during upload");
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+        }
+    };
+
+    const handleDelete = async (fileId: string) => {
+        if (!confirm("Are you sure you want to logically delete this file from VaultIQ and move it to the Cloud Trash?")) return;
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/files/${fileId}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setFiles(prev => prev.filter(f => f.id !== fileId));
+            } else {
+                const error = await res.json();
+                alert(error.error || "Delete failed");
+            }
+        } catch (err) {
+            console.error("Delete error", err);
+            alert("Network error");
+        }
+    };
 
     return (
         <div className="h-[calc(100vh-8rem)] flex flex-col space-y-6">
@@ -22,8 +114,13 @@ export default function FileManagerPage() {
                     <button className="flex items-center gap-2 px-4 py-2 border border-white/10 rounded-lg bg-black/40 hover:bg-white/5 text-sm font-medium transition-colors">
                         <Filter className="w-4 h-4" /> Filter
                     </button>
-                    <button className="flex-1 sm:flex-none px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:bg-primary/90 transition-colors">
-                        Upload File
+                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+                    <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        className="flex-1 sm:flex-none px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    >
+                        {isUploading ? "Uploading..." : "Upload File"}
                     </button>
                 </div>
             </div>
@@ -41,39 +138,69 @@ export default function FileManagerPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5 text-foreground">
-                            {dummyFiles.map((file, i) => (
-                                <tr key={i} className="hover:bg-white/5 transition-colors group cursor-pointer">
-                                    <td className="px-6 py-4 flex items-center gap-3">
-                                        {file.type === "folder" ? (
-                                            <FolderIcon className="w-5 h-5 text-indigo-400" />
-                                        ) : (
-                                            <FileIcon className="w-5 h-5 text-blue-400" />
-                                        )}
-                                        <span className="font-medium group-hover:text-primary transition-colors">{file.name}</span>
-                                    </td>
-                                    <td className="px-6 py-4 text-muted-foreground">
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/5 border border-white/10">
-                                            {file.cloud}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-muted-foreground">{file.size}</td>
-                                    <td className="px-6 py-4 text-muted-foreground">{file.modified}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button className="p-1.5 rounded-md hover:bg-white/10 text-muted-foreground group-hover:text-foreground">
-                                            <MoreVertical className="w-4 h-4" />
-                                        </button>
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                                        Loading files...
                                     </td>
                                 </tr>
-                            ))}
+                            ) : files.length === 0 ? (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                                        No files found. Try connecting a cloud account.
+                                    </td>
+                                </tr>
+                            ) : (
+                                files.map((file) => (
+                                    <tr 
+                                        key={file.id} 
+                                        onClick={() => { if(file.webViewLink) window.open(file.webViewLink, '_blank'); }}
+                                        className="hover:bg-white/5 transition-colors group cursor-pointer"
+                                    >
+                                        <td className="px-6 py-4 flex items-center gap-3">
+                                            {getFileIcon(file.mimeType, file.isDir)}
+                                            <span className="font-medium group-hover:text-primary transition-colors">{file.name}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-muted-foreground">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/5 border border-white/10">
+                                                {file.connection?.provider === "GOOGLE_DRIVE" ? "Google Drive" : file.connection?.provider === "DROPBOX" ? "Dropbox" : "OneDrive"}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-muted-foreground">
+                                            {formatBytes(file.size)}
+                                        </td>
+                                        <td className="px-6 py-4 text-muted-foreground">
+                                            {new Date(file.updatedAt).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-6 py-4 text-right flex justify-end items-center gap-1">
+                                            <button 
+                                                className="p-1.5 rounded-md hover:bg-white/10 text-muted-foreground hover:text-red-400 group-hover:text-red-400/70 transition-colors"
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(file.id); }}
+                                                title="Delete File"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                            <button 
+                                                className="p-1.5 rounded-md hover:bg-white/10 text-muted-foreground group-hover:text-foreground transition-colors"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <MoreVertical className="w-4 h-4" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
                 <div className="p-4 border-t border-white/5 bg-black/20 text-xs text-muted-foreground flex justify-between items-center">
-                    <span>Showing 5 of 84,092 files</span>
-                    <div className="flex gap-2">
-                        <button className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 border border-white/10">Prev</button>
-                        <button className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 border border-white/10">Next</button>
-                    </div>
+                    <span>Showing {files.length} files</span>
+                    {files.length > 0 && (
+                        <div className="flex gap-2">
+                            <button className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 border border-white/10" disabled>PREVIOUS</button>
+                            <button className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 border border-white/10" disabled>NEXT</button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

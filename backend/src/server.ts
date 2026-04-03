@@ -1,10 +1,10 @@
-import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+// Load env vars immediately
+dotenv.config();
+
+import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-
-// Load env vars
-dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 5000;

@@ -1,17 +1,46 @@
 "use client";
+import React from "react";
 
 import { motion } from "framer-motion";
-import { Cloud, Lock, Mail, ArrowRight, Github } from "lucide-react";
+import { Cloud, Lock, Mail, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/lib/constants";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function LoginPage() {
     const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [error, setError] = React.useState("");
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Temporary redirect to dashboard for functional mockup
-        router.push("/dashboard");
+        setIsLoading(true);
+        setError("");
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.error || "Login failed");
+                setIsLoading(false);
+                return;
+            }
+
+            localStorage.setItem("token", data.token);
+            router.push("/dashboard");
+        } catch (err) {
+            setError("Network error. Is the backend running?");
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -39,6 +68,12 @@ export default function LoginPage() {
                         Access your unified intelligent cloud ecosystem.
                     </p>
 
+                    {error && (
+                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
+
                     <form className="space-y-4" onSubmit={handleLogin}>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-muted-foreground">Email Address</label>
@@ -47,6 +82,8 @@ export default function LoginPage() {
                                 <input
                                     type="email"
                                     required
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
                                     placeholder="name@company.com"
                                     className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                                 />
@@ -63,15 +100,17 @@ export default function LoginPage() {
                                 <input
                                     type="password"
                                     required
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
                                     placeholder="••••••••••••"
                                     className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                                 />
                             </div>
                         </div>
 
-                        <button type="submit" className="w-full h-11 bg-foreground text-background font-semibold rounded-xl hover:bg-white/90 transition-all flex items-center justify-center gap-2 group mt-6">
-                            Sign In
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <button type="submit" disabled={isLoading} className="w-full h-11 bg-foreground text-background font-semibold rounded-xl hover:bg-white/90 transition-all flex items-center justify-center gap-2 group mt-6 disabled:opacity-50">
+                            {isLoading ? "Signing In..." : "Sign In"}
+                            {!isLoading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
                         </button>
                     </form>
 
@@ -81,17 +120,17 @@ export default function LoginPage() {
                         <div className="h-px bg-white/10 flex-1" />
                     </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-4">
-                        <button className="h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors text-sm font-medium gap-2">
-                            <Github className="w-4 h-4" /> Github
-                        </button>
-                        <button className="h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors text-sm font-medium gap-2">
-                            <span className="font-bold">G</span> Google
+                    <div className="mt-6 flex flex-col gap-4">
+                        <button 
+                            type="button"
+                            onClick={() => window.location.href = `${API_BASE_URL}/api/auth/google/login`}
+                            className="h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors text-sm font-medium gap-2">
+                            <span className="font-bold">G</span> Continue with Google
                         </button>
                     </div>
 
                     <p className="mt-8 text-center text-sm text-muted-foreground">
-                        Don't have an account?{" "}
+                        Don&apos;t have an account?{" "}
                         <Link href="/register" className="text-foreground font-medium hover:underline">
                             Create workspace
                         </Link>

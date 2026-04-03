@@ -28,8 +28,12 @@ export default function Topbar() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                         type="text"
+                        readOnly
+                        onClick={() => {
+                            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+                        }}
                         placeholder="Search files across clouds... (⌘K)"
-                        className="w-full h-9 bg-black/40 border border-white/10 rounded-full pl-9 pr-4 text-sm text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+                        className="w-full h-9 bg-black/40 border border-white/10 rounded-full pl-9 pr-4 text-sm text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground cursor-text"
                     />
                 </div>
 

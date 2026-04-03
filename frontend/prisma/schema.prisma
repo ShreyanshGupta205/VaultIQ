@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  
+  cloudConnections CloudConnection[]
+  analysisReports  AnalysisReport[]
+  notifications    Notification[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model CloudConnection {
+  id           String   @id @default(cuid())
+  userId       String
+  provider     String   // GOOGLE_DRIVE, DROPBOX, ONEDRIVE
+  accessToken  String
+  refreshToken String?
+  expiresAt    DateTime?
+  email        String?
+  status       String   @default("CONNECTED") // CONNECTED, ERROR, DISCONNECTED
+  storageUsed  BigInt   @default(0)
+  storageTotal BigInt   @default(0)
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files        CloudFile[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, provider, email])
+}
+
+model CloudFile {
+  id           String   @id @default(cuid())
+  userId       String
+  connectionId String
+  fileId       String   // ID from the provider
+  name         String
+  mimeType     String
+  size         BigInt   @default(0)
+  webViewLink  String?
+  iconLink     String?
+  parentId     String?
+  path         String?
+  isDir        Boolean  @default(false)
+  md5Checksum  String?
+  
+  connection   CloudConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([connectionId, fileId])
+  @@index([md5Checksum])
+}
+
+model AnalysisReport {
+  id             String   @id @default(cuid())
+  userId         String
+  status         String   // PENDING, COMPLETED, ERROR
+  totalFiles     Int      @default(0)
+  totalSize      BigInt   @default(0)
+  duplicatesSize BigInt   @default(0)
+  unusedSize     BigInt   @default(0)
+  data           String?
+  
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   // INFO, WARNING, SUCCESS, ERROR
+  isRead    Boolean  @default(false)
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}

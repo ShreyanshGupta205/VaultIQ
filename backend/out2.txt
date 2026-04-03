@@ -1,0 +1,96 @@
+﻿[dotenv@17.3.1] injecting env (1) from .env -- tip: ΓÜí∩╕Å secrets for agents: https://dotenvx.com/as2
+node.exe : C:\Users\ASU
+S\Downloads\VaultIQ\vau
+ltiq-monorepo\backend\n
+ode_modules\ts-node\src
+\index.ts:859
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (C:\Users\ASUS   
+ \D...rc\index.ts:8    
+59:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+    return new TSError(
+diagnosticText, 
+diagnosticCodes, 
+diagnostics);
+           ^
+TSError: Γ¿» Unable to 
+compile TypeScript:
+src/lib/prisma.ts(4,5):
+ error TS2353: Object 
+literal may only 
+specify known 
+properties, and 
+'datasourceUrl' does 
+not exist in type 'Subs
+et<PrismaClientOptions,
+ PrismaClientOptions>'.
+
+    at createTSError (C
+:\Users\ASUS\Downloads\
+VaultIQ\vaultiq-monorep
+o\backend\node_modules\
+ts-node\src\index.ts:85
+9:12)
+    at reportTSError (C
+:\Users\ASUS\Downloads\
+VaultIQ\vaultiq-monorep
+o\backend\node_modules\
+ts-node\src\index.ts:86
+3:19)
+    at getOutput (C:\Us
+ers\ASUS\Downloads\Vaul
+tIQ\vaultiq-monorepo\ba
+ckend\node_modules\ts-n
+ode\src\index.ts:1077:3
+6)
+    at Object.compile (
+C:\Users\ASUS\Downloads
+\VaultIQ\vaultiq-monore
+po\backend\node_modules
+\ts-node\src\index.ts:1
+433:41)
+    at 
+Module.m._compile (C:\U
+sers\ASUS\Downloads\Vau
+ltIQ\vaultiq-monorepo\b
+ackend\node_modules\ts-
+node\src\index.ts:1617:
+30)
+    at node:internal/mo
+dules/cjs/loader:1893:1
+0
+    at Object.require.e
+xtensions.<computed> 
+[as .ts] (C:\Users\ASUS
+\Downloads\VaultIQ\vaul
+tiq-monorepo\backend\no
+de_modules\ts-node\src\
+index.ts:1621:12)
+    at Module.load (nod
+e:internal/modules/cjs/
+loader:1481:32)
+    at Module._load (no
+de:internal/modules/cjs
+/loader:1300:12)
+    at TracingChannel.t
+raceSync (node:diagnost
+ics_channel:328:14) {
+  diagnosticCodes: [ 
+2353 ]
+}

@@ -1,0 +1,64 @@
+﻿node.exe : Prisma 
+schema loaded from 
+prisma\schema.prisma.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Prisma schema   
+  l...\schema.prism    
+a.:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+Error: Prisma schema 
+validation - (validate 
+wasm)
+Error code: P1012
+[1;91merror[0m: 
+[1mThe datasource 
+property `url` is no 
+longer supported in 
+schema files. Move 
+connection URLs for 
+Migrate to 
+`prisma.config.ts` and 
+pass either `adapter` 
+for a direct database 
+connection or 
+`accelerateUrl` for 
+Accelerate to the 
+`PrismaClient` 
+constructor. See https:
+//pris.ly/d/config-data
+source and https://pris
+.ly/d/prisma7-client-co
+nfig[0m
+  [1;94m-->[0m  [4mp
+risma\schema.prisma:10
+[0m
+[1;94m   | [0m
+[1;94m 9 | [0m  
+provider = "sqlite"
+[1;94m10 | [0m  
+[1;91murl      = 
+"file:./dev.db"[0m
+[1;94m   | [0m
+
+Validation Error 
+Count: 1
+[Context: validate]
+
+Prisma CLI Version : 
+7.4.1
