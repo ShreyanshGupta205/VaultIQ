@@ -1,7 +1,11 @@
 import dotenv from 'dotenv';
-// Load env vars immediately
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
+if (!process.env.DATABASE_URL) {
+    console.error(`[DIAGNOSTICS] DATABASE_URL is MISSING! Current keys: ${Object.keys(process.env).join(', ')}`);
+}
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
