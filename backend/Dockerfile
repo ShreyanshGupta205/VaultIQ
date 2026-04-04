@@ -3,6 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Install openssl for Prisma
+RUN apk add --no-cache openssl openssl-dev
+
 COPY package.json package-lock.json ./
 RUN npm ci
 
@@ -18,9 +21,12 @@ RUN npm run build
 FROM node:20-alpine AS runner
 
 WORKDIR /app
+
+# Install openssl for Prisma runtime
 RUN apk add --no-cache openssl
 
 ENV NODE_ENV=production
+ENV PORT=10000
 
 # Install only production dependencies
 COPY package.json package-lock.json ./
@@ -30,8 +36,8 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-EXPOSE 5000
+EXPOSE 10000
 
-# Start script should handle migrations or we do it via docker-compose
-CMD ["npm", "start"]
+CMD ["node", "dist/server.js"]
