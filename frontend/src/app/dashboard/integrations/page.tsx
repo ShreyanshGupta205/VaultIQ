@@ -81,7 +81,7 @@ export default function IntegrationsPage() {
 
     const handleConnect = (providerId: string) => {
         if (!token) return;
-        window.location.href = `${API_BASE_URL}/api/cloud/auth/${providerId}?token=${token}`;
+        window.location.href = `/api/cloud/auth/${providerId}?token=${token}`;
     };
 
     const handleDisconnect = async (connectionId: string) => {
