@@ -9,17 +9,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
 
 const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
-const GOOGLE_REDIRECT_URI = (process.env.GOOGLE_REDIRECT_URI || '').trim();
 
 const DROPBOX_CLIENT_ID = (process.env.DROPBOX_CLIENT_ID || '').trim();
 const DROPBOX_CLIENT_SECRET = (process.env.DROPBOX_CLIENT_SECRET || '').trim();
-const DROPBOX_REDIRECT_URI = (process.env.DROPBOX_REDIRECT_URI || '').trim();
 
 const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '').trim();
 const ONEDRIVE_CLIENT_SECRET = (process.env.ONEDRIVE_CLIENT_SECRET || '').trim();
-const ONEDRIVE_REDIRECT_URI = (process.env.ONEDRIVE_REDIRECT_URI || '').trim();
-
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const verifyToken = (token: string): string | null => {
     try {
@@ -32,24 +27,28 @@ const verifyToken = (token: string): string | null => {
 
 export async function GET(req: Request, { params }: { params: { provider: string } }) {
     const { provider } = params;
-    const { searchParams } = new URL(req.url);
+    const { searchParams, origin } = new URL(req.url);
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const error = searchParams.get('error');
     const error_description = searchParams.get('error_description');
 
+    const dashboardRedirectUrl = `${origin}/dashboard/integrations`;
+
     if (error) {
-        return NextResponse.redirect(`${FRONTEND_URL}/dashboard/integrations?error=oauth_rejected&details=${encodeURIComponent(String(error_description || error))}`);
+        return NextResponse.redirect(`${dashboardRedirectUrl}?error=oauth_rejected&details=${encodeURIComponent(String(error_description || error))}`);
     }
 
     if (!code || !state) {
-        return NextResponse.redirect(`${FRONTEND_URL}/dashboard/integrations?error=missing_params`);
+        return NextResponse.redirect(`${dashboardRedirectUrl}?error=missing_params`);
     }
 
     const userId = verifyToken(state);
     if (!userId) {
-        return NextResponse.redirect(`${FRONTEND_URL}/dashboard/integrations?error=invalid_state`);
+        return NextResponse.redirect(`${dashboardRedirectUrl}?error=invalid_state`);
     }
+
+    const redirectUri = `${origin}/api/cloud/auth/${provider}/callback`;
 
     try {
         let dbProvider = '';
@@ -61,7 +60,7 @@ export async function GET(req: Request, { params }: { params: { provider: string
 
         if (provider === 'google') {
             dbProvider = 'GOOGLE_DRIVE';
-            const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
+            const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, redirectUri);
             const { tokens } = await oauth2Client.getToken(code);
             oauth2Client.setCredentials(tokens);
             accessToken = tokens.access_token || '';
@@ -81,7 +80,7 @@ export async function GET(req: Request, { params }: { params: { provider: string
         else if (provider === 'dropbox') {
             dbProvider = 'DROPBOX';
             const tokenResponse = await axios.post('https://api.dropboxapi.com/oauth2/token', new URLSearchParams({
-                code: code, grant_type: 'authorization_code', client_id: DROPBOX_CLIENT_ID, client_secret: DROPBOX_CLIENT_SECRET, redirect_uri: DROPBOX_REDIRECT_URI
+                code: code, grant_type: 'authorization_code', client_id: DROPBOX_CLIENT_ID, client_secret: DROPBOX_CLIENT_SECRET, redirect_uri: redirectUri
             }).toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
             accessToken = tokenResponse.data.access_token;
@@ -101,7 +100,7 @@ export async function GET(req: Request, { params }: { params: { provider: string
         else if (provider === 'onedrive') {
             dbProvider = 'ONEDRIVE';
             const tokenRes = await axios.post('https://login.microsoftonline.com/consumers/oauth2/v2.0/token', qs.stringify({
-                client_id: ONEDRIVE_CLIENT_ID, client_secret: ONEDRIVE_CLIENT_SECRET, code, redirect_uri: ONEDRIVE_REDIRECT_URI, grant_type: 'authorization_code'
+                client_id: ONEDRIVE_CLIENT_ID, client_secret: ONEDRIVE_CLIENT_SECRET, code, redirect_uri: redirectUri, grant_type: 'authorization_code'
             }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
             accessToken = tokenRes.data.access_token;
@@ -131,9 +130,9 @@ export async function GET(req: Request, { params }: { params: { provider: string
             create: { userId, provider: dbProvider, ...data }
         });
 
-        return NextResponse.redirect(`${FRONTEND_URL}/dashboard/integrations?status=success&trigger_sync=true`);
+        return NextResponse.redirect(`${dashboardRedirectUrl}?status=success&trigger_sync=true`);
     } catch (err: any) {
         console.error(`Error in Google OAuth callback:`, err?.response?.data || err?.message || err);
-        return NextResponse.redirect(`${FRONTEND_URL}/dashboard/integrations?error=callback_failed`);
+        return NextResponse.redirect(`${dashboardRedirectUrl}?error=callback_failed`);
     }
 }
