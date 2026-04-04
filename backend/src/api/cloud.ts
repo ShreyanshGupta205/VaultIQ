@@ -9,21 +9,21 @@ import qs from 'qs';
 import { syncGoogleDrive, syncDropbox, syncOneDrive } from '../services/syncManager';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
+const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
 
 const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
-const GOOGLE_REDIRECT_URI = (process.env.GOOGLE_REDIRECT_URI || '').trim();
+const GOOGLE_REDIRECT_URI = (process.env.GOOGLE_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/cloud/auth/google/callback').trim();
 
 const DROPBOX_CLIENT_ID = (process.env.DROPBOX_CLIENT_ID || '').trim();
 const DROPBOX_CLIENT_SECRET = (process.env.DROPBOX_CLIENT_SECRET || '').trim();
-const DROPBOX_REDIRECT_URI = (process.env.DROPBOX_REDIRECT_URI || '').trim();
+const DROPBOX_REDIRECT_URI = (process.env.DROPBOX_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/cloud/auth/dropbox/callback').trim();
 
 const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '').trim();
 const ONEDRIVE_CLIENT_SECRET = (process.env.ONEDRIVE_CLIENT_SECRET || '').trim();
-const ONEDRIVE_REDIRECT_URI = (process.env.ONEDRIVE_REDIRECT_URI || '').trim();
+const ONEDRIVE_REDIRECT_URI = (process.env.ONEDRIVE_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/cloud/auth/onedrive/callback').trim();
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://frontend-wheat-six-38.vercel.app';
 
 const authMiddleware = (req: Request, res: Response, next: any) => {
     const authHeader = req.headers.authorization;
@@ -61,6 +61,42 @@ router.get('/status', authMiddleware, async (req: Request, res: Response): Promi
             storageTotal: conn.storageTotal.toString()
         }));
         res.json({ connections: safeConnections });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// @route   POST /api/cloud/sync
+router.post('/sync', authMiddleware, async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { connectionId } = req.body;
+        const userId = (req as any).user.id;
+
+        const connection = await prisma.cloudConnection.findUnique({
+            where: { id: connectionId }
+        });
+
+        if (!connection || connection.userId !== userId) {
+            res.status(404).json({ error: 'Connection not found' });
+            return;
+        }
+
+        // Trigger sync
+        if (syncQueue) {
+            await syncQueue.add('syncCloud', { userId, connectionId: connection.id });
+        } else {
+            // Fallback sync logic
+            if (connection.provider === 'GOOGLE_DRIVE') {
+                syncGoogleDrive(connection).catch(console.error);
+            } else if (connection.provider === 'DROPBOX') {
+                syncDropbox(connection).catch(console.error);
+            } else if (connection.provider === 'ONEDRIVE') {
+                syncOneDrive(connection).catch(console.error);
+            }
+        }
+
+        res.json({ message: 'Sync started successfully' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

@@ -5,12 +5,12 @@ import prisma from '../lib/prisma';
 import { google } from 'googleapis';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
+const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
 
 const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
-const GOOGLE_LOGIN_REDIRECT_URI = (process.env.GOOGLE_LOGIN_REDIRECT_URI || 'http://localhost:5000/api/auth/google/callback').trim();
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const GOOGLE_LOGIN_REDIRECT_URI = (process.env.GOOGLE_LOGIN_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/auth/google/callback').trim();
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://frontend-wheat-six-38.vercel.app';
 
 // @route   POST /api/auth/register
 router.post('/register', async (req: Request, res: Response): Promise<void> => {

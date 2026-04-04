@@ -33,7 +33,7 @@ export default function IntegrationsPage() {
         }
     };
 
-    const handleSync = async (connectionId: string, continuationToken: string | null = null) => {
+    const handleSync = async (connectionId: string) => {
         if (!token) return;
         setConnecting(connectionId);
         
@@ -44,18 +44,12 @@ export default function IntegrationsPage() {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ connectionId, continuationToken })
+                body: JSON.stringify({ connectionId })
             });
 
             if (res.ok) {
-                const result = await res.json();
-                if (result.continuationToken) {
-                    // Recursive call for the next chunk
-                    await handleSync(connectionId, result.continuationToken);
-                } else {
-                    setConnecting(null);
-                    await fetchConnections();
-                }
+                setConnecting(null);
+                await fetchConnections();
             } else {
                 setConnecting(null);
                 alert("Sync failed. Please try again.");

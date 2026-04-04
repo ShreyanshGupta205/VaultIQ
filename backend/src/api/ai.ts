@@ -5,7 +5,7 @@ import { analysisQueue } from '../workers';
 import { runStorageAnalysis } from '../services/aiManager';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
+const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
 
 // Middleware to protect routes
 const authMiddleware = (req: Request, res: Response, next: any) => {

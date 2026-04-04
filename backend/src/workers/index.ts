@@ -65,19 +65,32 @@ function initWorkers() {
 
             const syncWorker = new Worker('syncQueue', async job => {
                 if (job.name === 'syncCloud') {
-                    const { userId, connectionId } = job.data;
-                    const numFiles = Math.floor(Math.random() * 5) + 5;
-                    const exts = ['.pdf', '.docx', '.jpg', '.mp4', '.xlsx'];
-                    for (let i = 0; i < numFiles; i++) {
-                        const ext = exts[Math.floor(Math.random() * exts.length)];
-                        const size = Math.floor(Math.random() * 5 * 1024 * 1024) + 1024;
-                        await prisma.cloudFile.upsert({
-                            where: { connectionId_fileId: { connectionId, fileId: `mock_${i}_${Date.now()}` } },
-                            update: {},
-                            create: { userId, connectionId, fileId: `mock_${i}_${Date.now()}`, name: `Document_${i}${ext}`, mimeType: `application/${ext.replace('.', '')}`, size: BigInt(size), isDir: false, path: `/Document_${i}${ext}` }
-                        });
+                    const { connectionId } = job.data;
+                    const connection = await prisma.cloudConnection.findUnique({
+                        where: { id: connectionId }
+                    });
+
+                    if (!connection) {
+                        console.error(`[worker]: Connection ${connectionId} not found`);
+                        return;
                     }
-                    return { status: 'completed', message: `Synced ${numFiles} files.` };
+
+                    // Dynamically import syncManager functions to avoid circular dependencies
+                    const { syncGoogleDrive, syncDropbox, syncOneDrive } = require('../services/syncManager');
+
+                    try {
+                        if (connection.provider === 'GOOGLE_DRIVE') {
+                            await syncGoogleDrive(connection);
+                        } else if (connection.provider === 'DROPBOX') {
+                            await syncDropbox(connection);
+                        } else if (connection.provider === 'ONEDRIVE') {
+                            await syncOneDrive(connection);
+                        }
+                        return { status: 'completed', provider: connection.provider };
+                    } catch (err: any) {
+                        console.error(`[worker]: Sync failed for ${connection.id}: ${err.message}`);
+                        throw err;
+                    }
                 }
             }, { connection: redis });
 

@@ -1,7 +1,5 @@
 import dotenv from 'dotenv';
-if (process.env.NODE_ENV !== 'production') {
-    dotenv.config();
-}
+dotenv.config();
 
 if (!process.env.DATABASE_URL) {
     console.error(`[DIAGNOSTICS] DATABASE_URL is MISSING! Current keys: ${Object.keys(process.env).join(', ')}`);

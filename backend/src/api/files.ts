@@ -8,7 +8,7 @@ import axios from 'axios';
 import { PassThrough } from 'stream';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
+const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';

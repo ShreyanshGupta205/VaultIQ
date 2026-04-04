@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
+const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
 
 // Middleware mock for extracting user
 const authMiddleware = (req: Request, res: Response, next: any) => {

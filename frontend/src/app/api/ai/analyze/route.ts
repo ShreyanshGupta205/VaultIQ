@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import { runStorageAnalysis } from '@/lib/aiManager';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
+const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_jwt_key_dev_2024';
 
 const verifyToken = (req: Request) => {
     const authHeader = req.headers.get('authorization');

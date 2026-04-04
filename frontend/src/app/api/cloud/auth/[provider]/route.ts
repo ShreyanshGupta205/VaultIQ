@@ -4,16 +4,16 @@ import { google } from 'googleapis';
 
 export const dynamic = 'force-dynamic';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
-const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
-const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
+const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_jwt_key_dev_2024';
+const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '56762731479-luq9uf6cfju9phbnhm69bcbql07msftl.apps.googleusercontent.com').trim();
+const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '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').trim();
 
-const DROPBOX_CLIENT_ID = (process.env.DROPBOX_CLIENT_ID || '').trim();
-const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '').trim();
+const DROPBOX_CLIENT_ID = (process.env.DROPBOX_CLIENT_ID || 'kxhplrklpxwy9hj').trim();
+const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '99a2b21f-d10c-4c9d-ba30-7e95c715587e').trim();
 
 // Reliably get the app's base URL from environment variables
 // NEXTAUTH_URL is set on Vercel, falls back to localhost for local dev
-const APP_URL = (process.env.NEXTAUTH_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+const APP_URL = (process.env.NEXTAUTH_URL || process.env.FRONTEND_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://frontend-wheat-six-38.vercel.app')).replace(/\/$/, '');
 
 export async function GET(req: Request, { params }: { params: { provider: string } }) {
     const { provider } = params;

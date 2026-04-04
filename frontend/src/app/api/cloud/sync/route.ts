@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
 import { syncGoogleDriveChunk, syncDropboxChunk, syncOneDriveChunk } from '@/lib/syncManager';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
+const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_jwt_key_dev_2024';
 
 export async function POST(req: Request) {
     try {
