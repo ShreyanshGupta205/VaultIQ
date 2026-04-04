@@ -4,6 +4,8 @@ import prisma from '@/lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
     try {
         const authHeader = req.headers.get('authorization');
