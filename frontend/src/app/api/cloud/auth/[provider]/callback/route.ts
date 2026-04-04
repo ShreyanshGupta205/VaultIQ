@@ -27,7 +27,10 @@ const verifyToken = (token: string): string | null => {
 
 export async function GET(req: Request, { params }: { params: { provider: string } }) {
     const { provider } = params;
-    const { searchParams, origin } = new URL(req.url);
+    const { searchParams } = new URL(req.url);
+    const host = req.headers.get('host') || 'localhost:3000';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const origin = `${protocol}://${host}`;
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const error = searchParams.get('error');

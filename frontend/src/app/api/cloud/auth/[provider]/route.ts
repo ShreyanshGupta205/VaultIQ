@@ -11,7 +11,10 @@ const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '').trim();
 
 export async function GET(req: Request, { params }: { params: { provider: string } }) {
     const { provider } = params;
-    const { searchParams, origin } = new URL(req.url);
+    const { searchParams } = new URL(req.url);
+    const host = req.headers.get('host') || 'localhost:3000';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const origin = `${protocol}://${host}`;
     const token = searchParams.get('token');
 
     if (!token) return NextResponse.json({ error: 'Missing token' }, { status: 400 });
