@@ -4,6 +4,9 @@ import prisma from '@/lib/prisma';
 import { google } from 'googleapis';
 import axios from 'axios';
 import qs from 'qs';
+import { headers } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_dev_key';
 
@@ -29,10 +32,16 @@ export async function GET(req: Request, { params }: { params: { provider: string
     const { provider } = params;
     const { searchParams } = new URL(req.url);
     
-    // Vercel-friendly origin detection
-    const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || 'localhost:3000';
-    const protocol = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
-    const origin = `${protocol}://${host}`;
+    // Most robust origin detection for Vercel App Router
+    const headerList = headers();
+    const host = headerList.get('x-forwarded-host') || headerList.get('host');
+    const protocol = headerList.get('x-forwarded-proto') || (host && host.includes('localhost') ? 'http' : 'https');
+    
+    // Final fallback logic
+    let origin = host ? `${protocol}://${host}` : null;
+    if (!origin || origin.includes('localhost:3000')) {
+        origin = process.env.FRONTEND_URL || process.env.NEXTAUTH_URL || 'https://frontend-wheat-six-38.vercel.app';
+    }
     
     const code = searchParams.get('code');
     const state = searchParams.get('state');
