@@ -1,0 +1,411 @@
+﻿
+> frontend@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.14
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+node.exe : 
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (:  
+  String) [], RemoteExc   
+ eption
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+Failed to compile.
+
+./src/app/(auth)/login/pag
+e.tsx
+9:10  Error: 
+'useAuthStore' is defined 
+but never used.  @typescri
+pt-eslint/no-unused-vars
+40:18  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+
+./src/app/(auth)/register/
+page.tsx
+40:18  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+
+./src/app/api/ai/analyze/r
+oute.ts
+13:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/ai/report/ro
+ute.ts
+12:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/auth/login/r
+oute.ts
+33:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/auth/me/rout
+e.ts
+15:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+28:14  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+28:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/auth/registe
+r/route.ts
+39:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/cloud/auth/[
+provider]/callback/route.t
+s
+26:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+135:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/cloud/auth/[
+provider]/route.ts
+25:14  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+
+./src/app/api/cloud/status
+/route.ts
+15:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+22:101  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+37:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/cloud/sync/r
+oute.ts
+16:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+50:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/api/files/route.
+ts
+18:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+36:9  Error: 
+'whereClause' is never 
+reassigned. Use 'const' 
+instead.  prefer-const
+36:22  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+57:44  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+63:14  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+95:89  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+111:30  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+141:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+149:26  Error: A 
+`require()` style import 
+is forbidden.  @typescript
+-eslint/no-require-imports
+
+./src/app/api/files/[id]/r
+oute.ts
+18:58  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+50:27  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+58:22  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+65:22  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+71:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/dashboard/files/
+page.tsx
+4:10  Error: 'FileIcon' 
+is defined but never 
+used.  @typescript-eslint/
+no-unused-vars
+27:40  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+51:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 'fetchFiles'. 
+Either include it or 
+remove the dependency 
+array.  react-hooks/exhaus
+tive-deps
+
+./src/app/dashboard/integr
+ations/page.tsx
+19:52  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+80:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 
+'fetchConnections'. 
+Either include it or 
+remove the dependency 
+array.  react-hooks/exhaus
+tive-deps
+
+./src/app/dashboard/intell
+igence/page.tsx
+5:40  Error: 
+'ShieldAlert' is defined 
+but never used.  @typescri
+pt-eslint/no-unused-vars
+5:74  Error: 'X' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+24:46  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+42:36  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+48:18  Error: 'e' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+94:8  Warning: React Hook 
+useEffect has a missing 
+dependency: 
+'fetchReport'. Either 
+include it or remove the 
+dependency array.  react-h
+ooks/exhaustive-deps
+140:67  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+151:71  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+196:32  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  react/no-unesc
+aped-entities
+297:73  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/dashboard/page.t
+sx
+20:52  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+22:46  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/app/dashboard/settin
+gs/page.tsx
+4:74  Error: 'Trash2' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+4:91  Error: 'Globe' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+4:98  Error: 'Smartphone' 
+is defined but never 
+used.  @typescript-eslint/
+no-unused-vars
+65:18  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+96:18  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+115:18  Error: 'err' is 
+defined but never used.  @
+typescript-eslint/no-unuse
+d-vars
+312:35  Error: `'` can be 
+escaped with `&apos;`, 
+`&lsquo;`, `&#39;`, 
+`&rsquo;`.  react/no-unesc
+aped-entities
+
+./src/components/layout/Co
+mmandPalette.tsx
+5:35  Error: 
+'ShieldAlert' is defined 
+but never used.  @typescri
+pt-eslint/no-unused-vars
+13:44  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/lib/aiManager.ts
+16:40  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+20:27  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+37:21  Error: 'key' is 
+assigned a value but 
+never used.  @typescript-e
+slint/no-unused-vars
+66:19  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/lib/syncManager.ts
+40:20  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+61:21  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+71:20  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+90:21  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+121:21  Error: Unexpected 
+any. Specify a different 
+type.  @typescript-eslint/
+no-explicit-any
+
+./src/store/useAuthStore.t
+s
+4:9  Error: Prefer using 
+the primitive `string` as 
+a type name, rather than 
+the upper-cased `String`. 
+ @typescript-eslint/no-wra
+pper-object-types
+5:12  Error: Prefer using 
+the primitive `string` as 
+a type name, rather than 
+the upper-cased `String`. 
+ @typescript-eslint/no-wra
+pper-object-types
+6:12  Error: Prefer using 
+the primitive `string` as 
+a type name, rather than 
+the upper-cased `String`. 
+ @typescript-eslint/no-wra
+pper-object-types
+11:12  Error: Prefer 
+using the primitive 
+`string` as a type name, 
+rather than the 
+upper-cased `String`.  @ty
+pescript-eslint/no-wrapper
+-object-types
+13:34  Error: Prefer 
+using the primitive 
+`string` as a type name, 
+rather than the 
+upper-cased `String`.  @ty
+pescript-eslint/no-wrapper
+-object-types
+
+info  - Need to disable 
+some ESLint rules? Learn 
+more here: https://nextjs.
+org/docs/basic-features/es
+lint#disabling-rules

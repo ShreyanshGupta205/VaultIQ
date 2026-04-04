@@ -1,0 +1,101 @@
+﻿
+> frontend@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.14
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/21) ...
+node.exe : B [Error]: Dynamic server usage: Route 
+/api/cloud/status couldn't be rendered statically 
+because it used `request.headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (B [Error] 
+   : Dyna...ic-server-error:String) [], RemoteExcepti  
+  on
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at V (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monor
+epo\frontend\node_modules\next\dist\compiled\next-serve
+r\app-route.runtime.prod.js:6:21777)
+    at Object.get (C:\Users\ASUS\Downloads\VaultIQ\vaul
+tiq-monorepo\frontend\node_modules\next\dist\compiled\n
+ext-server\app-route.runtime.prod.js:6:29137)
+    at p (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monor
+epo\frontend\.next\server\app\api\cloud\status\route.js
+:1:1541)
+    at C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monorepo
+\frontend\node_modules\next\dist\compiled\next-server\a
+pp-route.runtime.prod.js:6:36963
+    at C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monorepo
+\frontend\node_modules\next\dist\server\lib\trace\trace
+r.js:140:36
+    at NoopContextManager.with (C:\Users\ASUS\Downloads
+\VaultIQ\vaultiq-monorepo\frontend\node_modules\next\di
+st\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\ASUS\Downloads\VaultIQ
+\vaultiq-monorepo\frontend\node_modules\next\dist\compi
+led\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\ASUS\Downlo
+ads\VaultIQ\vaultiq-monorepo\frontend\node_modules\next
+\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\ASUS\Downl
+oads\VaultIQ\vaultiq-monorepo\frontend\node_modules\nex
+t\dist\compiled\@opentelemetry\api\index.js:1:18854)
+    at C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monorepo
+\frontend\node_modules\next\dist\server\lib\trace\trace
+r.js:122:103 {
+  description: "Route /api/cloud/status couldn't be 
+rendered statically because it used `request.headers`. 
+See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (5/21) 
+   Generating static pages (10/21) 
+   Generating static pages (15/21) 
+ Γ£ô Generating static pages (21/21)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /                                    2.54 kB         137 kB
+Γö£ Γùï /_not-found                          873 B          88.1 kB
+Γö£ ╞Æ /api/ai/analyze                      0 B                0 B
+Γö£ ╞Æ /api/ai/report                       0 B                0 B
+Γö£ ╞Æ /api/auth/login                      0 B                0 B
+Γö£ ╞Æ /api/auth/me                         0 B                0 B
+Γö£ ╞Æ /api/auth/register                   0 B                0 B
+Γö£ ╞Æ /api/cloud/auth/[provider]           0 B                0 B
+Γö£ ╞Æ /api/cloud/auth/[provider]/callback  0 B                0 B
+Γö£ ╞Æ /api/cloud/status                    0 B                0 B
+Γö£ ╞Æ /api/cloud/sync                      0 B                0 B
+Γö£ ╞Æ /api/files                           0 B                0 B
+Γö£ ╞Æ /api/files/[id]                      0 B                0 B
+Γö£ Γùï /auth-callback                       976 B           128 kB
+Γö£ Γùï /dashboard                           2.99 kB         130 kB
+Γö£ Γùï /dashboard/files                     4.05 kB        91.2 kB
+Γö£ Γùï /dashboard/integrations              3.52 kB        90.7 kB
+Γö£ Γùï /dashboard/intelligence              3.79 kB         134 kB
+Γö£ Γùï /dashboard/settings                  6.32 kB         133 kB
+Γö£ Γùï /login                               2.15 kB         136 kB
+Γöö Γùï /register                            2.28 kB         136 kB
++ First Load JS shared by all            87.2 kB
+  Γö£ chunks/117-3ec8f4fe47af93c1.js       31.6 kB
+  Γö£ chunks/fd9d1056-5d5b8e0b238c0110.js  53.6 kB
+  Γöö other shared chunks (total)          1.95 kB
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma';
 import { google } from 'googleapis';
 import axios from 'axios';
 import qs from 'qs';
-import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,6 +18,9 @@ const DROPBOX_CLIENT_SECRET = (process.env.DROPBOX_CLIENT_SECRET || '').trim();
 const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '').trim();
 const ONEDRIVE_CLIENT_SECRET = (process.env.ONEDRIVE_CLIENT_SECRET || '').trim();
 
+// Reliably get the app's base URL from environment variables
+const APP_URL = (process.env.NEXTAUTH_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+
 const verifyToken = (token: string): string | null => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as any;
@@ -31,24 +33,13 @@ const verifyToken = (token: string): string | null => {
 export async function GET(req: Request, { params }: { params: { provider: string } }) {
     const { provider } = params;
     const { searchParams } = new URL(req.url);
-    
-    // Most robust origin detection for Vercel App Router
-    const headerList = headers();
-    const host = headerList.get('x-forwarded-host') || headerList.get('host');
-    const protocol = headerList.get('x-forwarded-proto') || (host && host.includes('localhost') ? 'http' : 'https');
-    
-    // Final fallback logic
-    let origin = host ? `${protocol}://${host}` : null;
-    if (!origin || origin.includes('localhost:3000')) {
-        origin = process.env.FRONTEND_URL || process.env.NEXTAUTH_URL || 'https://frontend-wheat-six-38.vercel.app';
-    }
-    
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const error = searchParams.get('error');
     const error_description = searchParams.get('error_description');
 
-    const dashboardRedirectUrl = `${origin}/dashboard/integrations`;
+    const dashboardRedirectUrl = `${APP_URL}/dashboard/integrations`;
+    const redirectUri = `${APP_URL}/api/cloud/auth/${provider}/callback`;
 
     if (error) {
         return NextResponse.redirect(`${dashboardRedirectUrl}?error=oauth_rejected&details=${encodeURIComponent(String(error_description || error))}`);
@@ -62,8 +53,6 @@ export async function GET(req: Request, { params }: { params: { provider: string
     if (!userId) {
         return NextResponse.redirect(`${dashboardRedirectUrl}?error=invalid_state`);
     }
-
-    const redirectUri = `${origin}/api/cloud/auth/${provider}/callback`;
 
     try {
         let dbProvider = '';

@@ -1,0 +1,63 @@
+﻿
+> frontend@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.14
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+node.exe : PrismaClientConstructorValidationError: 
+Using engine type "client" requires either "adapter" 
+or "accelerateUrl" to be provided to PrismaClient 
+constructor.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (PrismaCli 
+   entCon...nt constructor.:String) [], RemoteExcepti  
+  on
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Read more at https://pris.ly/d/client-constructor
+    at Rm (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-mono
+repo\frontend\node_modules\@prisma\client\runtime\clien
+t.js:66:3615)
+    at jl (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-mono
+repo\frontend\node_modules\@prisma\client\runtime\clien
+t.js:66:3916)
+    at new t (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-m
+onorepo\frontend\node_modules\@prisma\client\runtime\cl
+ient.js:70:1808)
+    at 93154 (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-m
+onorepo\frontend\.next\server\app\api\ai\analyze\route.
+js:1:2826)
+    at t (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monor
+epo\frontend\.next\server\webpack-runtime.js:1:128)
+    at 47848 (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-m
+onorepo\frontend\.next\server\app\api\ai\analyze\route.
+js:1:667)
+    at t (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monor
+epo\frontend\.next\server\webpack-runtime.js:1:128)
+    at r (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monor
+epo\frontend\.next\server\app\api\ai\analyze\route.js:1
+:2928)
+    at C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monorepo
+\frontend\.next\server\app\api\ai\analyze\route.js:1:29
+58
+    at t.X (C:\Users\ASUS\Downloads\VaultIQ\vaultiq-mon
+orepo\frontend\.next\server\webpack-runtime.js:1:1206)
+
+> Build error occurred
+Error: Failed to collect page data for /api/ai/analyze
+    at C:\Users\ASUS\Downloads\VaultIQ\vaultiq-monorepo
+\frontend\node_modules\next\dist\build\utils.js:1268:15
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:103:5) {
+  type: 'Error'
+}

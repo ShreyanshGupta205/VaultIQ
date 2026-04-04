@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { google } from 'googleapis';
-import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,21 +11,13 @@ const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
 const DROPBOX_CLIENT_ID = (process.env.DROPBOX_CLIENT_ID || '').trim();
 const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '').trim();
 
+// Reliably get the app's base URL from environment variables
+// NEXTAUTH_URL is set on Vercel, falls back to localhost for local dev
+const APP_URL = (process.env.NEXTAUTH_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+
 export async function GET(req: Request, { params }: { params: { provider: string } }) {
     const { provider } = params;
     const { searchParams } = new URL(req.url);
-    
-    // Most robust origin detection for Vercel App Router
-    const headerList = headers();
-    const host = headerList.get('x-forwarded-host') || headerList.get('host');
-    const protocol = headerList.get('x-forwarded-proto') || (host && host.includes('localhost') ? 'http' : 'https');
-    
-    // Final fallback logic
-    let origin = host ? `${protocol}://${host}` : null;
-    if (!origin || origin.includes('localhost:3000')) {
-        origin = process.env.FRONTEND_URL || process.env.NEXTAUTH_URL || 'https://frontend-wheat-six-38.vercel.app';
-    }
-    
     const token = searchParams.get('token');
 
     if (!token) return NextResponse.json({ error: 'Missing token' }, { status: 400 });
@@ -38,7 +29,7 @@ export async function GET(req: Request, { params }: { params: { provider: string
     }
 
     const state = token;
-    const redirectUri = `${origin}/api/cloud/auth/${provider}/callback`;
+    const redirectUri = `${APP_URL}/api/cloud/auth/${provider}/callback`;
 
     if (provider === 'google') {
         const oauth2Client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, redirectUri);

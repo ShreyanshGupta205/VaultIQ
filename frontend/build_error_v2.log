@@ -1,0 +1,104 @@
+﻿
+> frontend@0.1.0 build
+> next build
+
+  Γû▓ Next.js 14.2.14
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+node.exe : PrismaClientCon
+structorValidationError: 
+Using engine type 
+"client" requires either 
+"adapter" or 
+"accelerateUrl" to be 
+provided to PrismaClient 
+constructor.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (P  
+  rismaClientCon...nt c   
+ onstructor.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+Read more at https://pris.
+ly/d/client-constructor
+    at Rm (C:\Users\ASUS\D
+ownloads\VaultIQ\vaultiq-m
+onorepo\frontend\node_modu
+les\@prisma\client\runtime
+\client.js:66:3615)
+    at jl (C:\Users\ASUS\D
+ownloads\VaultIQ\vaultiq-m
+onorepo\frontend\node_modu
+les\@prisma\client\runtime
+\client.js:66:3916)
+    at new t (C:\Users\ASU
+S\Downloads\VaultIQ\vaulti
+q-monorepo\frontend\node_m
+odules\@prisma\client\runt
+ime\client.js:70:1808)
+    at 93154 (C:\Users\ASU
+S\Downloads\VaultIQ\vaulti
+q-monorepo\frontend\.next\
+server\app\api\auth\me\rou
+te.js:1:1820)
+    at t (C:\Users\ASUS\Do
+wnloads\VaultIQ\vaultiq-mo
+norepo\frontend\.next\serv
+er\webpack-runtime.js:1:12
+8)
+    at 71492 (C:\Users\ASU
+S\Downloads\VaultIQ\vaulti
+q-monorepo\frontend\.next\
+server\app\api\auth\me\rou
+te.js:1:666)
+    at t (C:\Users\ASUS\Do
+wnloads\VaultIQ\vaultiq-mo
+norepo\frontend\.next\serv
+er\webpack-runtime.js:1:12
+8)
+    at t (C:\Users\ASUS\Do
+wnloads\VaultIQ\vaultiq-mo
+norepo\frontend\.next\serv
+er\app\api\auth\me\route.j
+s:1:1922)
+    at C:\Users\ASUS\Downl
+oads\VaultIQ\vaultiq-monor
+epo\frontend\.next\server\
+app\api\auth\me\route.js:1
+:1952
+    at t.X (C:\Users\ASUS\
+Downloads\VaultIQ\vaultiq-
+monorepo\frontend\.next\se
+rver\webpack-runtime.js:1:
+1206)
+
+> Build error occurred
+Error: Failed to collect 
+page data for /api/auth/me
+    at C:\Users\ASUS\Downl
+oads\VaultIQ\vaultiq-monor
+epo\frontend\node_modules\
+next\dist\build\utils.js:1
+268:15
+    at process.processTick
+sAndRejections (node:inter
+nal/process/task_queues:10
+3:5) {
+  type: 'Error'
+}
