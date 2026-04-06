@@ -6,7 +6,7 @@ import { google } from 'googleapis';
 // DropboxAuth SDK removed — we build the OAuth URL manually (no PKCE) since we use client_secret flow
 import axios from 'axios';
 import qs from 'qs';
-import { syncGoogleDrive, syncDropbox, syncOneDrive } from '../services/syncManager';
+import { syncGoogleDrive, syncDropbox, syncOneDrive, syncGitHub } from '../services/syncManager';
 
 const router = Router();
 const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
@@ -22,6 +22,10 @@ const DROPBOX_REDIRECT_URI = (process.env.DROPBOX_REDIRECT_URI || 'https://vault
 const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '').trim();
 const ONEDRIVE_CLIENT_SECRET = (process.env.ONEDRIVE_CLIENT_SECRET || '').trim();
 const ONEDRIVE_REDIRECT_URI = (process.env.ONEDRIVE_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/cloud/auth/onedrive/callback').trim();
+
+const GITHUB_CLIENT_ID = (process.env.GITHUB_CLIENT_ID || '').trim();
+const GITHUB_CLIENT_SECRET = (process.env.GITHUB_CLIENT_SECRET || '').trim();
+const GITHUB_REDIRECT_URI = (process.env.GITHUB_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/cloud/auth/github/callback').trim();
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://frontend-wheat-six-38.vercel.app';
 
@@ -93,6 +97,8 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response): Promis
                 syncDropbox(connection).catch(console.error);
             } else if (connection.provider === 'ONEDRIVE') {
                 syncOneDrive(connection).catch(console.error);
+            } else if (connection.provider === 'GITHUB') {
+                syncGitHub(connection).catch(console.error);
             }
         }
 
@@ -148,6 +154,11 @@ router.get('/auth/:provider', (req: Request, res: Response): any => {
         const url = `https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=${ONEDRIVE_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(ONEDRIVE_REDIRECT_URI)}&response_mode=query&scope=${scopes}&state=${state}`;
         return res.redirect(url);
     } 
+    else if (provider === 'github') {
+        const scopes = encodeURIComponent('repo user:email');
+        const url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URI)}&scope=${scopes}&state=${state}`;
+        return res.redirect(url);
+    }
     else {
         return res.status(400).json({ error: 'Invalid provider' });
     }
@@ -283,6 +294,44 @@ router.get('/auth/:provider/callback', async (req: Request, res: Response): Prom
             storageTotal = BigInt(driveRes.data.quota?.total || 0);
             storageUsed = BigInt(driveRes.data.quota?.used || 0);
         }
+        else if (provider === 'github') {
+            dbProvider = 'GITHUB';
+            
+            // Exchange code for token
+            const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+                client_id: GITHUB_CLIENT_ID,
+                client_secret: GITHUB_CLIENT_SECRET,
+                code: code,
+                redirect_uri: GITHUB_REDIRECT_URI
+            }, {
+                headers: { 'Accept': 'application/json' }
+            });
+
+            accessToken = tokenResponse.data.access_token;
+            if (!accessToken) {
+                console.error('[cloud] GitHub token exchange failed:', tokenResponse.data);
+                return res.redirect(`${FRONTEND_URL}/dashboard/integrations?error=github_auth_failed`);
+            }
+
+            // Get user info (email)
+            const userResponse = await axios.get('https://api.github.com/user', {
+                headers: { 'Authorization': `token ${accessToken}` }
+            });
+            email = userResponse.data.email;
+
+            if (!email) {
+                const emailsResponse = await axios.get('https://api.github.com/user/emails', {
+                    headers: { 'Authorization': `token ${accessToken}` }
+                });
+                const primaryEmail = emailsResponse.data.find((e: any) => e.primary);
+                email = primaryEmail ? primaryEmail.email : userResponse.data.login;
+            }
+
+            // GitHub doesn't provide a storage quota via API like this, so we'll init with 0
+            // and syncManager will calculate it from repo sizes.
+            storageTotal = BigInt(100) * BigInt(1024) * BigInt(1024) * BigInt(1024); // 100GB
+            storageUsed = BigInt(0);
+        }
 
         const existing = await prisma.cloudConnection.findFirst({
             where: { userId, provider: dbProvider }
@@ -328,6 +377,8 @@ router.get('/auth/:provider/callback', async (req: Request, res: Response): Prom
                 syncDropbox(savedConnection).catch(console.error);
             } else if (dbProvider === 'ONEDRIVE') {
                 syncOneDrive(savedConnection).catch(console.error);
+            } else if (dbProvider === 'GITHUB') {
+                syncGitHub(savedConnection).catch(console.error);
             }
         }
 

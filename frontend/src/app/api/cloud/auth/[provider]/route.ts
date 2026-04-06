@@ -10,6 +10,7 @@ const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || 'GOCSPX-VsaBuL
 
 const DROPBOX_CLIENT_ID = (process.env.DROPBOX_CLIENT_ID || 'kxhplrklpxwy9hj').trim();
 const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '99a2b21f-d10c-4c9d-ba30-7e95c715587e').trim();
+const GITHUB_CLIENT_ID = (process.env.GITHUB_CLIENT_ID || '').trim();
 
 // Reliably get the app's base URL from environment variables
 // NEXTAUTH_URL is set on Vercel, falls back to localhost for local dev
@@ -54,6 +55,11 @@ export async function GET(req: Request, { params }: { params: { provider: string
     else if (provider === 'onedrive') {
         const scopes = encodeURIComponent('offline_access files.read.all user.read');
         const url = `https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=${ONEDRIVE_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&response_mode=query&scope=${scopes}&state=${state}`;
+        return NextResponse.redirect(url);
+    }
+    else if (provider === 'github') {
+        const scopes = encodeURIComponent('repo user:email');
+        const url = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scopes}&state=${state}`;
         return NextResponse.redirect(url);
     }
 

@@ -18,6 +18,9 @@ const DROPBOX_CLIENT_SECRET = (process.env.DROPBOX_CLIENT_SECRET || 'yu9l7dgrq7r
 const ONEDRIVE_CLIENT_ID = (process.env.ONEDRIVE_CLIENT_ID || '99a2b21f-d10c-4c9d-ba30-7e95c715587e').trim();
 const ONEDRIVE_CLIENT_SECRET = (process.env.ONEDRIVE_CLIENT_SECRET || 'd6l8Q~ngROeDDKF-~NF7XwE3Qb0SeowLYpRv7c02').trim();
 
+const GITHUB_CLIENT_ID = (process.env.GITHUB_CLIENT_ID || '').trim();
+const GITHUB_CLIENT_SECRET = (process.env.GITHUB_CLIENT_SECRET || '').trim();
+
 // Reliably get the app's base URL from environment variables
 const APP_URL = (process.env.NEXTAUTH_URL || process.env.FRONTEND_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://frontend-wheat-six-38.vercel.app')).replace(/\/$/, '');
 
@@ -116,6 +119,27 @@ export async function GET(req: Request, { params }: { params: { provider: string
             const driveRes = await axios.get('https://graph.microsoft.com/v1.0/me/drive', { headers: { 'Authorization': `Bearer ${accessToken}` } });
             storageTotal = BigInt(driveRes.data.quota?.total || 0);
             storageUsed = BigInt(driveRes.data.quota?.used || 0);
+        }
+        else if (provider === 'github') {
+            dbProvider = 'GITHUB';
+            const tokenRes = await axios.post('https://github.com/login/oauth/access_token', {
+                client_id: GITHUB_CLIENT_ID, client_secret: GITHUB_CLIENT_SECRET, code, redirect_uri: redirectUri
+            }, { headers: { 'Accept': 'application/json' } });
+
+            accessToken = tokenRes.data.access_token;
+            if (!accessToken) throw new Error('GitHub token exchange failed');
+
+            const userRes = await axios.get('https://api.github.com/user', { headers: { 'Authorization': `token ${accessToken}` } });
+            email = userRes.data.email || userRes.data.login;
+
+            if (!userRes.data.email) {
+                const emailsRes = await axios.get('https://api.github.com/user/emails', { headers: { 'Authorization': `token ${accessToken}` } });
+                const primaryEmail = emailsRes.data.find((e: any) => e.primary);
+                if (primaryEmail) email = primaryEmail.email;
+            }
+
+            storageTotal = BigInt(100) * BigInt(1024) * BigInt(1024) * BigInt(1024);
+            storageUsed = BigInt(0);
         }
 
         const data = {

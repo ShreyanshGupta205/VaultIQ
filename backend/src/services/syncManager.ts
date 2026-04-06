@@ -245,3 +245,79 @@ export async function syncOneDrive(connection: CloudConnection) {
         console.error(`[syncManager] Error fetching OneDrive files:`, error?.response?.data || error?.message || error);
     }
 }
+
+export async function syncGitHub(connection: CloudConnection) {
+    if (!connection.accessToken) {
+        throw new Error('No access token available for this GitHub connection.');
+    }
+    console.log(`[syncManager] Starting GitHub sync for user ${connection.userId}`);
+
+    try {
+        let page = 1;
+        let fileCount = 0;
+        let totalSizeKB = 0;
+
+        while (true) {
+            const response = await axios.get(`https://api.github.com/user/repos?per_page=100&page=${page}&sort=updated`, {
+                headers: { 
+                    'Authorization': `token ${connection.accessToken}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'User-Agent': 'VaultIQ-App'
+                }
+            });
+
+            const repos = response.data;
+            if (!repos || repos.length === 0) break;
+
+            for (const repo of repos) {
+                const sizeBytes = BigInt(repo.size || 0) * BigInt(1024); // GitHub size is in KB
+                totalSizeKB += (repo.size || 0);
+
+                await prisma.cloudFile.upsert({
+                    where: {
+                        connectionId_fileId: {
+                            connectionId: connection.id,
+                            fileId: repo.id.toString()
+                        }
+                    },
+                    update: {
+                        name: repo.full_name,
+                        mimeType: 'application/vnd.github.repository',
+                        size: sizeBytes,
+                        webViewLink: repo.html_url,
+                        isDir: true,
+                        path: repo.full_name
+                    },
+                    create: {
+                        userId: connection.userId,
+                        connectionId: connection.id,
+                        fileId: repo.id.toString(),
+                        name: repo.full_name,
+                        mimeType: 'application/vnd.github.repository',
+                        size: sizeBytes,
+                        webViewLink: repo.html_url,
+                        isDir: true,
+                        path: repo.full_name
+                    }
+                });
+            }
+
+            fileCount += repos.length;
+            if (repos.length < 100) break;
+            page++;
+        }
+
+        // Update connection with "used" storage (sum of repo sizes)
+        await prisma.cloudConnection.update({
+            where: { id: connection.id },
+            data: {
+                storageUsed: BigInt(totalSizeKB) * BigInt(1024),
+                storageTotal: BigInt(100) * BigInt(1024) * BigInt(1024) * BigInt(1024) // 100GB soft limit for UI
+            }
+        });
+
+        console.log(`[syncManager] Successfully completed syncing ${fileCount} repositories for GitHub user ${connection.userId}`);
+    } catch (error: any) {
+        console.error(`[syncManager] Error fetching GitHub repos:`, error?.response?.data || error?.message || error);
+    }
+}
