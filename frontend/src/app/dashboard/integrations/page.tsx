@@ -99,7 +99,6 @@ export default function IntegrationsPage() {
         { name: "Google Drive", id: "google", dbId: "GOOGLE_DRIVE", icon: Cloud, color: "text-blue-500", bgColor: "bg-blue-500/10" },
         { name: "Dropbox", id: "dropbox", dbId: "DROPBOX", icon: Cloud, color: "text-indigo-500", bgColor: "bg-indigo-500/10" },
         { name: "Microsoft OneDrive", id: "onedrive", dbId: "ONEDRIVE", icon: Cloud, color: "text-sky-500", bgColor: "bg-sky-500/10" },
-        { name: "GitHub", id: "github", dbId: "GITHUB", icon: Github, color: "text-slate-200", bgColor: "bg-slate-500/10" },
     ];
 
     return (
