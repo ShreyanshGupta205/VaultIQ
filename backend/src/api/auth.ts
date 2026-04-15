@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma';
 import { google } from 'googleapis';
+import { firebaseAdmin } from '../lib/firebaseAdmin';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_jwt_key_dev_2024';
@@ -80,6 +81,44 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     } catch (err) {
         console.error((err as Error).message);
         res.status(500).send('Server error');
+    }
+});
+
+// @route   POST /api/auth/firebase-login
+router.post('/firebase-login', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { token, name } = req.body;
+        if (!token) {
+            res.status(400).json({ error: 'Token is required' });
+            return;
+        }
+
+        const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+        const email = decodedToken.email;
+
+        if (!email) {
+            res.status(400).json({ error: 'Firebase token did not contain an email' });
+            return;
+        }
+
+        let user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            user = await prisma.user.create({
+                data: {
+                    email,
+                    name: name || decodedToken.name || email.split('@')[0],
+                }
+            });
+        }
+
+        const payload = { user: { id: user.id } };
+        jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' }, (err, jwtToken) => {
+            if (err) throw err;
+            res.status(200).json({ token: jwtToken, user: { id: user.id, email: user.email, name: user.name } });
+        });
+    } catch (err: any) {
+        console.error('Firebase Auth Error:', err?.message || err);
+        res.status(401).json({ error: 'Invalid Firebase Token' });
     }
 });
 

@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/lib/constants";
 import { useAuthStore } from "@/store/useAuthStore";
+import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -17,29 +19,47 @@ export default function LoginPage() {
     const [error, setError] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
 
+    const exchangeToken = async (firebaseToken: string) => {
+        const res = await fetch(`${API_BASE_URL}/api/auth/firebase-login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: firebaseToken })
+        });
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.error || "Backend authentication failed");
+        }
+
+        setAuth(data.user, data.token);
+        router.push("/dashboard");
+    };
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
 
         try {
-            const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await res.json();
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const token = await userCredential.user.getIdToken();
+            await exchangeToken(token);
+        } catch (err: any) {
+            setError(err.message || "Invalid credentials");
+            setIsLoading(false);
+        }
+    };
 
-            if (!res.ok) {
-                setError(data.error || "Login failed");
-                setIsLoading(false);
-                return;
-            }
-
-            setAuth(data.user, data.token);
-            router.push("/dashboard");
-        } catch (err) {
-            setError("Network error. Is the backend running?");
+    const handleGoogleLogin = async () => {
+        setIsLoading(true);
+        setError("");
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const token = await result.user.getIdToken();
+            await exchangeToken(token);
+        } catch (err: any) {
+            setError(err.message || "Google login failed");
             setIsLoading(false);
         }
     };
@@ -128,8 +148,9 @@ export default function LoginPage() {
                     <div className="mt-6 flex flex-col gap-4">
                         <button 
                             type="button"
-                            onClick={() => window.location.href = `${API_BASE_URL}/api/auth/google/login`}
-                            className="h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors text-sm font-medium gap-2">
+                            onClick={handleGoogleLogin}
+                            disabled={isLoading}
+                            className="h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors text-sm font-medium gap-2 disabled:opacity-50">
                             <span className="font-bold">G</span> Continue with Google
                         </button>
                     </div>

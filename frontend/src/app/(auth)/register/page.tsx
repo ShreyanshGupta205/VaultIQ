@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/lib/constants";
 import { useAuthStore } from "@/store/useAuthStore";
+import { auth } from "@/lib/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -18,29 +20,33 @@ export default function RegisterPage() {
     const [error, setError] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(false);
 
+    const exchangeToken = async (firebaseToken: string, name: string) => {
+        const res = await fetch(`${API_BASE_URL}/api/auth/firebase-login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: firebaseToken, name })
+        });
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.error || "Backend authentication failed");
+        }
+
+        setAuth(data.user, data.token);
+        router.push("/dashboard");
+    };
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
 
         try {
-            const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password })
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "Registration failed");
-                setIsLoading(false);
-                return;
-            }
-
-            setAuth(data.user, data.token);
-            router.push("/dashboard");
-        } catch (err) {
-            setError("Network error. Is the backend running?");
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const token = await userCredential.user.getIdToken();
+            await exchangeToken(token, name);
+        } catch (err: any) {
+            setError(err.message || "Registration failed");
             setIsLoading(false);
         }
     };
