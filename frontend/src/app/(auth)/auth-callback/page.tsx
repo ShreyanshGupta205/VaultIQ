@@ -3,10 +3,12 @@ import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Cloud } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
 
 function AuthCallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { setAuth } = useAuthStore();
 
     useEffect(() => {
         const token = searchParams?.get("token");
@@ -18,7 +20,7 @@ function AuthCallbackContent() {
         }
 
         if (token) {
-            localStorage.setItem("token", token);
+            setAuth({ id: "", email: "oauth-user@vaultiq.com" }, token);
             router.push("/dashboard");
         } else {
             router.push("/login");
