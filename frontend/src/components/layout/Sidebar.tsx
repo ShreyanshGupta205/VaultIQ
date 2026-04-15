@@ -39,7 +39,7 @@ export default function Sidebar() {
                 {!collapsed && (
                     <div className="flex items-center gap-2 text-primary font-bold overflow-hidden whitespace-nowrap">
                         <Cloud className="w-6 h-6 shrink-0" />
-                        <span>VaultMind AI</span>
+                        <span>VaultIQ AI</span>
                     </div>
                 )}
                 {collapsed && (

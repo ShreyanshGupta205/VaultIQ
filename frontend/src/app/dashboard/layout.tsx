@@ -4,7 +4,7 @@ import CommandPalette from "@/components/layout/CommandPalette";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Dashboard | VaultMind AI",
+    title: "Dashboard | VaultIQ AI",
 };
 
 export default function DashboardLayout({

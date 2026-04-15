@@ -9,7 +9,7 @@ import qs from 'qs';
 import { syncGoogleDrive, syncDropbox, syncOneDrive, syncGitHub } from '../services/syncManager';
 
 const router = Router();
-const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'vaultiq_super_secret_jwt_key_dev_2024';
 
 const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();

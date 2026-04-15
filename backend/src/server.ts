@@ -31,7 +31,7 @@ app.use('/api', apiRoutes);
 
 // Health check route
 app.get('/health', (req: Request, res: Response) => {
-    res.status(200).json({ status: 'OK', message: 'VaultMind AI Backend is running' });
+    res.status(200).json({ status: 'OK', message: 'VaultIQ AI Backend is running' });
 });
 
 // Start Server

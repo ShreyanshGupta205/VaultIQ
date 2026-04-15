@@ -6,9 +6,11 @@ import { Cloud, Lock, Mail, ArrowRight, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/lib/constants";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function RegisterPage() {
     const router = useRouter();
+    const { setAuth } = useAuthStore();
 
     const [name, setName] = React.useState("");
     const [email, setEmail] = React.useState("");
@@ -35,7 +37,7 @@ export default function RegisterPage() {
                 return;
             }
 
-            localStorage.setItem("token", data.token);
+            setAuth(data.user, data.token);
             router.push("/dashboard");
         } catch (err) {
             setError("Network error. Is the backend running?");
@@ -59,7 +61,7 @@ export default function RegisterPage() {
                             <div className="p-2 rounded-xl bg-white/5 border border-white/10 group-hover:border-primary/50 transition-colors">
                                 <Cloud className="w-8 h-8 text-primary" />
                             </div>
-                            <span className="text-2xl font-bold tracking-tight">VaultMind</span>
+                            <span className="text-2xl font-bold tracking-tight">VaultIQ AI</span>
                         </Link>
                     </div>
 
@@ -68,11 +70,13 @@ export default function RegisterPage() {
                         Start governing your multi-cloud environment securely.
                     </p>
 
-                    {error && (
-                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center">
-                            {error}
-                        </div>
-                    )}
+                    <div className="h-14 mb-2 flex items-center justify-center">
+                        {error && (
+                            <div className="w-full p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center">
+                                {error}
+                            </div>
+                        )}
+                    </div>
 
                     <form className="space-y-4" onSubmit={handleRegister}>
                         <div className="space-y-2">
@@ -85,6 +89,7 @@ export default function RegisterPage() {
                                     value={name}
                                     onChange={e => setName(e.target.value)}
                                     placeholder="Jane Doe"
+                                    autoComplete="name"
                                     className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                                 />
                             </div>
@@ -100,6 +105,7 @@ export default function RegisterPage() {
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     placeholder="name@company.com"
+                                    autoComplete="email"
                                     className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                                 />
                             </div>
@@ -115,6 +121,7 @@ export default function RegisterPage() {
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
                                     placeholder="••••••••••••"
+                                    autoComplete="new-password"
                                     className="w-full h-11 bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                                 />
                             </div>
@@ -135,7 +142,7 @@ export default function RegisterPage() {
                     </p>
 
                     <p className="mt-4 text-center text-[10px] text-muted-foreground opacity-50">
-                        By registering, you agree to VaultMind&apos;s Terms of Service and Privacy Policy. We use zero-trust architectures to ensure we never store your files.
+                        By registering, you agree to VaultIQ AI&apos;s Terms of Service and Privacy Policy. We use zero-trust architectures to ensure we never store your files.
                     </p>
                 </motion.div>
             </div>

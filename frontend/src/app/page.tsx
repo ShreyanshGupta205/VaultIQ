@@ -16,7 +16,7 @@ export default function Home() {
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Cloud className="w-6 h-6 text-primary" />
-            <span className="text-xl font-bold tracking-tight">VaultMind AI</span>
+            <span className="text-xl font-bold tracking-tight">VaultIQ AI</span>
           </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
             <Link href="#features" className="hover:text-foreground transition-colors">Features</Link>
@@ -25,9 +25,9 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">Sign In</Link>
-            <button className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+            <Link href="/register" className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(59,130,246,0.5)]">
               Get Started
-            </button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -65,12 +65,12 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Dashboard Preview Mockup */}
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
           className="mt-20 relative mx-auto max-w-5xl"
+          id="features"
         >
           <div className="rounded-2xl border border-white/10 glass-card overflow-hidden shadow-2xl">
             <div className="h-10 border-b border-white/10 bg-white/5 flex items-center px-4 gap-2">
@@ -140,6 +140,38 @@ export default function Home() {
             </div>
           </div>
         </motion.div>
+
+        {/* Security Section Placeholder */}
+        <section id="security" className="py-24 border-t border-white/5 mt-20">
+          <div className="max-w-4xl mx-auto">
+            <Shield className="w-12 h-12 text-primary mx-auto mb-6" />
+            <h2 className="text-3xl font-bold mb-4">Bank-Grade Security</h2>
+            <p className="text-muted-foreground">Your data never leaves your cloud. We only store metadata and use end-to-end encryption for all AI processing.</p>
+          </div>
+        </section>
+
+        {/* Pricing Section Placeholder */}
+        <section id="pricing" className="py-24 border-t border-white/5">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-12">Simple, Transparent Pricing</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { name: "Free", price: "$0", features: ["1 Cloud Link", "Basic AI Sync"] },
+                { name: "Pro", price: "$12", features: ["Unlimited Clouds", "Advanced AI Optimization", "Priority Support"] },
+                { name: "Enterprise", price: "Custom", features: ["SLA Guarantee", "Custom AI Models", "24/7 Dedicated Support"] }
+              ].map((plan) => (
+                <div key={plan.name} className="p-6 rounded-2xl border border-white/10 glass-card">
+                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                  <div className="text-3xl font-bold mb-4">{plan.price}</div>
+                  <ul className="text-sm text-muted-foreground space-y-2 mb-8">
+                    {plan.features.map(f => <li key={f}>• {f}</li>)}
+                  </ul>
+                  <button className="w-full py-2 rounded-full bg-primary text-primary-foreground font-medium">Get Started</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );

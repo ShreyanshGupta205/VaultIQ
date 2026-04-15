@@ -256,7 +256,7 @@ export default function SettingsPage() {
                     <div className="glass-card rounded-2xl p-6 relative overflow-hidden space-y-8">
                         <div>
                             <h3 className="text-xl font-bold">Appearance</h3>
-                            <p className="text-sm text-muted-foreground mt-1">Customize your VaultMind interface.</p>
+                            <p className="text-sm text-muted-foreground mt-1">Customize your VaultIQ AI interface.</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
