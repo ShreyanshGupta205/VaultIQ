@@ -25,9 +25,29 @@ function getFileIcon(mimeType: string, isDir: boolean) {
 export default function FileManagerPage() {
     const { token } = useAuthStore();
     const [files, setFiles] = useState<any[]>([]);
+    const [connections, setConnections] = useState<any[]>([]);
+    const [selectedProvider, setSelectedProvider] = useState<string>("");
     const [isLoading, setIsLoading] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const fetchConnections = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/cloud/status`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const activeConns = data.connections || [];
+                setConnections(activeConns);
+                if (activeConns.length > 0 && !selectedProvider) {
+                    setSelectedProvider(activeConns[0].provider);
+                }
+            }
+        } catch (err) {
+            console.error("Failed to fetch connections", err);
+        }
+    };
 
     const fetchFiles = async () => {
         try {
@@ -48,6 +68,7 @@ export default function FileManagerPage() {
     useEffect(() => {
         if (!token) return;
         fetchFiles();
+        fetchConnections();
     }, [token]);
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +78,7 @@ export default function FileManagerPage() {
         setIsUploading(true);
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('provider', selectedProvider);
 
         try {
             const res = await fetch(`${API_BASE_URL}/api/files/upload`, {
@@ -111,12 +133,31 @@ export default function FileManagerPage() {
                     <p className="text-muted-foreground mt-1">Browse, search, and manage files across all clouds instantly.</p>
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
+                    {connections.length > 0 && (
+                        <select 
+                            value={selectedProvider}
+                            onChange={(e) => setSelectedProvider(e.target.value)}
+                            className="px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer"
+                        >
+                            {connections.map(conn => (
+                                <option key={conn.id} value={conn.provider}>
+                                    {conn.provider.split('_').map((s: string) => s.charAt(0) + s.slice(1).toLowerCase()).join(' ')}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                     <button className="flex items-center gap-2 px-4 py-2 border border-white/10 rounded-lg bg-black/40 hover:bg-white/5 text-sm font-medium transition-colors">
                         <Filter className="w-4 h-4" /> Filter
                     </button>
                     <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
                     <button 
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => {
+                            if (connections.length === 0) {
+                                alert("Please connect a cloud account first in the Integrations page.");
+                                return;
+                            }
+                            fileInputRef.current?.click();
+                        }}
                         disabled={isUploading}
                         className="flex-1 sm:flex-none px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:bg-primary/90 transition-colors disabled:opacity-50"
                     >

@@ -12,7 +12,7 @@ const JWT_SECRET = 'vaultiq_super_secret_jwt_key_dev_2024';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || '';
+const GOOGLE_REDIRECT_URI = (process.env.GOOGLE_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/cloud/auth/google/callback').trim();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -101,18 +101,16 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req: Reques
 
         const selectedProvider = req.body.provider || 'GOOGLE_DRIVE';
         
-        // 1. Find valid connection
-        const connection = await prisma.cloudConnection.findFirst({
+        let connection = await prisma.cloudConnection.findFirst({
             where: { userId, provider: selectedProvider, status: 'CONNECTED' }
         });
 
-        if (!connection || !connection.accessToken) {
+        if (!connection) {
             // Fallback to any connected connection
-            const anyConn = await prisma.cloudConnection.findFirst({
+            connection = await prisma.cloudConnection.findFirst({
                 where: { userId, status: 'CONNECTED' }
             });
-            if (!anyConn) return res.status(400).json({ error: 'No connected cloud account found.' });
-            Object.assign(connection || {}, anyConn);
+            if (!connection) return res.status(400).json({ error: 'No connected cloud account found.' });
         }
 
         let savedFile: any = null;
@@ -214,8 +212,9 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req: Reques
 
         return res.json({ message: 'File uploaded successfully', file: safeFile });
     } catch (err: any) {
-        console.error('Error uploading file to Google Drive:', err?.message || err);
-        return res.status(500).json({ error: 'Failed to upload file to cloud provider' });
+        console.error(`[files] Upload error to ${req.body.provider || 'unknown'}:`, err?.response?.data || err?.message || err);
+        const errorMessage = err?.response?.data?.error?.message || err?.message || 'Failed to upload file to cloud provider';
+        return res.status(500).json({ error: errorMessage });
     }
 });
 

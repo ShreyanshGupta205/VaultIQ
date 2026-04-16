@@ -4,9 +4,9 @@ import axios from 'axios';
 import prisma from '../lib/prisma';
 import { CloudConnection } from '@prisma/client';
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || '';
+const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
+const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
+const GOOGLE_REDIRECT_URI = (process.env.GOOGLE_REDIRECT_URI || 'https://vaultiq-fdyf.onrender.com/api/cloud/auth/google/callback').trim();
 
 export async function syncGoogleDrive(connection: CloudConnection) {
     if (!connection.accessToken) {
@@ -98,7 +98,7 @@ export async function syncGoogleDrive(connection: CloudConnection) {
         console.log(`[syncManager] Successfully completed syncing ${fileCount} files for user ${connection.userId}`);
         
     } catch (error: any) {
-        console.error(`[syncManager] Error fetching Google Drive files:`, error?.message || error);
+        console.error(`[syncManager] Error fetching Google Drive files for user ${connection.userId}:`, error?.response?.data || error?.message || error);
     }
 }
 
@@ -170,7 +170,7 @@ export async function syncDropbox(connection: CloudConnection) {
 
         console.log(`[syncManager] Successfully completed syncing ${fileCount} files for Dropbox user ${connection.userId}`);
     } catch (error: any) {
-        console.error(`[syncManager] Error fetching Dropbox files:`, error?.message || error);
+        console.error(`[syncManager] Error fetching Dropbox files for user ${connection.userId}:`, error?.response?.data || error?.message || error);
     }
 }
 
@@ -242,7 +242,7 @@ export async function syncOneDrive(connection: CloudConnection) {
 
         console.log(`[syncManager] Successfully completed syncing ${fileCount} files for OneDrive user ${connection.userId}`);
     } catch (error: any) {
-        console.error(`[syncManager] Error fetching OneDrive files:`, error?.response?.data || error?.message || error);
+        console.error(`[syncManager] Error fetching OneDrive files for user ${connection.userId}:`, error?.response?.data || error?.message || error);
     }
 }
 

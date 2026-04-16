@@ -382,7 +382,7 @@ router.get('/auth/:provider/callback', async (req: Request, res: Response): Prom
             }
         }
 
-        return res.redirect(`${FRONTEND_URL}/dashboard/integrations?status=success`);
+        return res.redirect(`${FRONTEND_URL}/dashboard/integrations?status=success&trigger_sync=true`);
     } catch (err: any) {
         console.error(`Error in OAuth callback for ${provider}:`, err?.response?.data || err?.message || err);
         const errorMessage = err?.response?.data?.error_description || err?.message || 'callback_failed';
